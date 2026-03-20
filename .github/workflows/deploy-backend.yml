@@ -1,0 +1,70 @@
+name: Deploy Backend to Lambda
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "backend/**"
+      - ".github/workflows/deploy-backend.yml"
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-south-2
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Package Lambda code
+        run: |
+          cd backend
+          # Remove any existing package
+          rm -rf package-light lambda-light.zip
+
+          # Create lightweight package (code only, no dependencies)
+          mkdir package-light
+          cp -r app package-light/
+          cp lambda_handler.py package-light/
+
+          # Remove __pycache__ directories
+          find package-light -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
+
+          # Create deployment zip
+          cd package-light
+          zip -r ../lambda-light.zip . -q
+          cd ..
+
+          echo "✅ Lambda package created: $(ls -lh lambda-light.zip | awk '{print $5}')"
+
+      - name: Deploy to Lambda
+        run: |
+          cd backend
+          aws lambda update-function-code \
+            --function-name EventApp \
+            --zip-file fileb://lambda-light.zip
+
+          echo "✅ Lambda function updated successfully"
+
+      - name: Wait for function update
+        run: |
+          echo "Waiting for Lambda function to update..."
+          sleep 10
+
+      - name: Verify deployment
+        run: |
+          curl -f https://1u1hzmcg8j.execute-api.eu-south-2.amazonaws.com/ || exit 1
+          echo "✅ Backend deployment verified"

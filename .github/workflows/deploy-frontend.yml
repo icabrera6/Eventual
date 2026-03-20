@@ -1,0 +1,69 @@
+name: Deploy Frontend to S3
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "frontend/**"
+      - ".github/workflows/deploy-frontend.yml"
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "npm"
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: |
+          cd frontend
+          npm ci
+
+      - name: Build production bundle
+        env:
+          VITE_API_URL: ${{ secrets.VITE_API_URL }}
+          VITE_COGNITO_USER_POOL_ID: ${{ secrets.VITE_COGNITO_USER_POOL_ID }}
+          VITE_COGNITO_CLIENT_ID: ${{ secrets.VITE_COGNITO_CLIENT_ID }}
+        run: |
+          cd frontend
+          npm run build
+
+          echo "✅ Build completed"
+          echo "Build size: $(du -sh dist | cut -f1)"
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-south-2
+
+      - name: Deploy to S3
+        run: |
+          cd frontend
+          aws s3 sync dist/ s3://eventual.icabrera-portfolio.com/ --delete
+
+          echo "✅ Frontend deployed to S3"
+
+      - name: Invalidate CloudFront cache
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id E1G79SNXZM6SSL \
+            --paths "/*"
+
+          echo "✅ CloudFront cache invalidated"
+
+      - name: Verify deployment
+        run: |
+          curl -f https://eventual.icabrera-portfolio.com/ || exit 1
+          echo "✅ Frontend deployment verified"

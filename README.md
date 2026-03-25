@@ -211,7 +211,7 @@ touch .env
 #### Variables de Entorno Frontend (.env)
 
 ```bash
-VITE_API_URL=http://localhost:8000
+VITE_API_URL=http://localhost:8000 # En producción (.env.production) debe ser /api
 VITE_COGNITO_USER_POOL_ID=eu-south-2_ZhxFI6euI
 VITE_COGNITO_CLIENT_ID=your_client_id_here
 ```
@@ -306,7 +306,7 @@ En tu repositorio de GitHub:
 Agregar:
 - `AWS_ACCESS_KEY_ID`
 - `AWS_SECRET_ACCESS_KEY`
-- `VITE_API_URL` (URL de producción del backend)
+- `VITE_API_URL` (Usar `/api` para producción con CloudFront)
 - `VITE_COGNITO_USER_POOL_ID`
 - `VITE_COGNITO_CLIENT_ID`
 

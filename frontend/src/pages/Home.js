@@ -91,7 +91,7 @@ export async function HomePage() {
                     <div class="cta-content card">
                         <h2>¿Listo para comenzar?</h2>
                         <p class="text-muted">
-                            Únete a Event Manager y lleva la gestión de tus eventos al siguiente nivel
+                            Únete a Eventual y lleva la gestión de tus eventos al siguiente nivel
                         </p>
                         <a href="#/register" class="btn btn-primary btn-lg">
                             Crear Cuenta Gratis

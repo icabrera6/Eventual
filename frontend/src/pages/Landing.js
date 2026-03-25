@@ -75,7 +75,7 @@ export async function LandingPage() {
                     <div class="about-content">
                         <h2 class="section-title">Sobre Eventual</h2>
                         <p class="about-text">
-                            Eventual es la plataforma moderna y elegante diseñada para simplificar 
+                            Eventual es una plataforma diseñada para simplificar 
                             la gestión de eventos. Ya seas organizador o asistente, te ofrecemos 
                             las herramientas necesarias para crear experiencias memorables.
                         </p>
@@ -118,7 +118,7 @@ export async function LandingPage() {
                     <div class="footer-content">
                         <div class="footer-brand">
                             <h3>EVENTUAL</h3>
-                            <p class="text-secondary">Gestión elegante de eventos</p>
+                            <p class="text-secondary">Gestión de eventos para todos</p>
                         </div>
                         
                         <div class="footer-social">

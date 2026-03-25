@@ -255,18 +255,17 @@ python scripts/promote_admin.py
 
 ### Arquitectura de Producción
 
-```
+Usamos una arquitectura de **Proxy Unificado (Unified Proxy)** donde CloudFront actúa como el punto de entrada único para seguridad y rendimiento.
+
+```text
 Usuario
   ↓
 Route 53 (eventual.icabrera-portfolio.com)
   ↓
-CloudFront CDN (HTTPS, Gzip, Cache)
-  ↓ SSL/TLS Certificate (ACM)
-S3 Bucket (Frontend estático)
-
-Backend → AWS Lambda + API Gateway (o EC2)
-Auth → AWS Cognito User Pool
-Data → DynamoDB
+CloudFront CDN (HTTPS, Gzip, Unified Proxy)
+  ├── Ruta /* (S3 Bucket) → Frontend Estático
+  ├── Ruta /api/* (API Gateway) → AWS Lambda → DynamoDB (Datos lógicos)
+  └── Amazon Cognito (SDK) → Autenticación
 ```
 
 ### CI/CD con GitHub Actions

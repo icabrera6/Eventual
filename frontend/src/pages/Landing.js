@@ -32,7 +32,7 @@ export async function LandingPage() {
                     <div class="hero-content">
                         <h1 class="hero-title">EVENTUAL</h1>
                         <p class="hero-subtitle">
-                            La plataforma elegante para gestionar tus eventos profesionales
+                            La plataforma para gestionar tus eventos de forma sencilla
                         </p>
                         <div class="hero-actions">
                             <a href="#/register" class="btn btn-primary btn-lg">
